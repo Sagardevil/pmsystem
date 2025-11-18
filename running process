@@ -1,0 +1,349 @@
+🎬 Testing Sequence
+Test 1: Create Test Users
+POST https://localhost:5051/api/Auth/create-test-users
+No Body Required
+✅ Expected Response:
+json{
+  "message": "Test users created successfully",
+  "users": [
+    {
+      "id": 1,
+      "username": "manager1",
+      "email": "manager1@example.com",
+      "role": "Manager"
+    },
+    {
+      "id": 2,
+      "username": "employee1",
+      "email": "employee1@example.com",
+      "role": "Employee"
+    }
+  ]
+}
+
+Test 2: Verify Users
+GET https://localhost:5051/api/Auth/users
+✅ Expected Response:
+json[
+  {
+    "id": 1,
+    "username": "manager1",
+    "email": "manager1@example.com",
+    "role": "Manager",
+    "isActive": true,
+    "createdAt": "2025-11-15T10:49:31Z"
+  },
+  {
+    "id": 2,
+    "username": "employee1",
+    "email": "employee1@example.com",
+    "role": "Employee",
+    "isActive": true,
+    "createdAt": "2025-11-15T10:49:31Z"
+  }
+]
+
+Test 3: Get Active Users
+GET https://localhost:5051/api/Auth/active-users
+✅ Expected Response: Same as above (list of active users)
+
+Test 4: Create First Client
+POST https://localhost:5051/api/Clients
+Headers:
+
+Content-Type: application/json
+
+Body (raw JSON):
+json{
+  "name": "John Doe",
+  "companyName": "Doe Technologies",
+  "email": "john@doetech.com",
+  "phone": "+91-9876543210",
+  "clientType": "New",
+  "industry": "IT",
+  "status": "Active",
+  "location": "Mumbai, Maharashtra",
+  "assignedRecruiterId": 1,
+  "assignedRecruiterName": "manager1"
+}
+✅ Expected Response:
+json{
+  "id": 1,
+  "name": "John Doe",
+  "companyName": "Doe Technologies",
+  "email": "john@doetech.com",
+  "phone": "+91-9876543210",
+  "clientType": "New",
+  "onboardedDate": "2025-11-15T10:50:00Z",
+  "isActive": true,
+  "industry": "IT",
+  "status": "Active",
+  "location": "Mumbai, Maharashtra",
+  "assignedRecruiterId": 1,
+  "assignedRecruiterName": "manager1",
+  "dateAdded": "2025-11-15T10:50:00Z"
+}
+
+Test 5: Create Second Client
+POST https://localhost:5051/api/Clients
+Body:
+json{
+  "name": "Jane Smith",
+  "companyName": "Smith Legal Services",
+  "email": "jane@smithlegal.com",
+  "phone": "+91-9988776655",
+  "clientType": "New",
+  "industry": "Legal",
+  "status": "Active",
+  "location": "Pune, Maharashtra",
+  "assignedRecruiterId": 2,
+  "assignedRecruiterName": "employee1"
+}
+
+Test 6: Create Third Client
+POST https://localhost:5051/api/Clients
+Body:
+json{
+  "name": "Bob Wilson",
+  "companyName": "Wilson Payroll Solutions",
+  "email": "bob@wilsonpayroll.com",
+  "phone": "+91-8877665544",
+  "clientType": "Old",
+  "industry": "Payroll",
+  "status": "Active",
+  "location": "Hinjawadi, Pune",
+  "assignedRecruiterId": 1,
+  "assignedRecruiterName": "manager1"
+}
+
+Test 7: Get All Clients
+GET https://localhost:5051/api/Clients
+✅ Expected Response: Array of 3 clients with their project counts
+
+Test 8: Filter by Industry
+GET https://localhost:5051/api/Clients?industry=IT
+✅ Expected Response: Only "Doe Technologies"
+
+Test 9: Filter by Location
+GET https://localhost:5051/api/Clients?location=Pune
+✅ Expected Response: "Smith Legal Services" and "Wilson Payroll Solutions"
+
+Test 10: Search Clients
+GET https://localhost:5051/api/Clients?search=legal
+✅ Expected Response: "Smith Legal Services"
+
+Test 11: Create First Project
+POST https://localhost:5051/api/Projects
+Body:
+json{
+  "name": "E-Commerce Website",
+  "description": "A full-stack e-commerce platform with payment integration",
+  "clientId": 1,
+  "startDate": "2025-11-01T00:00:00Z",
+  "expectedEndDate": "2026-03-01T00:00:00Z",
+  "teamLeadId": 1,
+  "teamLeadName": "manager1",
+  "techStack": "React, Node.js, PostgreSQL, Stripe"
+}
+✅ Expected Response:
+json{
+  "id": 1,
+  "name": "E-Commerce Website",
+  "description": "A full-stack e-commerce platform with payment integration",
+  "clientId": 1,
+  "startDate": "2025-11-01T00:00:00Z",
+  "expectedEndDate": "2026-03-01T00:00:00Z",
+  "actualEndDate": null,
+  "status": "Ongoing",
+  "progressPercentage": 0,
+  "teamLeadId": 1,
+  "teamLeadName": "manager1",
+  "techStack": "React, Node.js, PostgreSQL, Stripe",
+  "createdAt": "2025-11-15T10:52:00Z",
+  "updatedAt": "2025-11-15T10:52:00Z"
+}
+
+Test 12: Create Second Project
+POST https://localhost:5051/api/Projects
+Body:
+json{
+  "name": "Mobile App Development",
+  "description": "Cross-platform mobile app for inventory management",
+  "clientId": 1,
+  "startDate": "2025-11-15T00:00:00Z",
+  "expectedEndDate": "2026-05-01T00:00:00Z",
+  "teamLeadId": 2,
+  "teamLeadName": "employee1",
+  "techStack": "React Native, Firebase, Redux"
+}
+
+Test 13: Create Third Project
+POST https://localhost:5051/api/Projects
+Body:
+json{
+  "name": "Legal Case Management System",
+  "description": "Document management and case tracking for law firms",
+  "clientId": 2,
+  "startDate": "2025-10-01T00:00:00Z",
+  "expectedEndDate": "2026-02-01T00:00:00Z",
+  "teamLeadId": 1,
+  "teamLeadName": "manager1",
+  "techStack": "Angular, .NET Core, SQL Server"
+}
+
+Test 14: Get All Projects
+GET https://localhost:5051/api/Projects
+✅ Expected Response: Array of 3 projects
+
+Test 15: Filter Projects by Client
+GET https://localhost:5051/api/Projects?clientId=1
+✅ Expected Response: 2 projects (E-Commerce Website, Mobile App Development)
+
+Test 16: Search Projects
+GET https://localhost:5051/api/Projects?search=mobile
+✅ Expected Response: "Mobile App Development"
+
+Test 17: Get Project by ID
+GET https://localhost:5051/api/Projects/1
+✅ Expected Response: Full details of E-Commerce Website project
+
+Test 18: Add Team Member to Project
+POST https://localhost:5051/api/Projects/1/team-members
+Body:
+json{
+  "name": "Alice Johnson",
+  "email": "alice@doetech.com",
+  "role": "Frontend Developer"
+}
+✅ Expected Response:
+json{
+  "id": 1,
+  "projectId": 1,
+  "name": "Alice Johnson",
+  "email": "alice@doetech.com",
+  "role": "Frontend Developer",
+  "joinedDate": "2025-11-15T10:55:00Z",
+  "isActive": true
+}
+
+Test 19: Add Another Team Member
+POST https://localhost:5051/api/Projects/1/team-members
+Body:
+json{
+  "name": "Bob Smith",
+  "email": "bob@doetech.com",
+  "role": "Backend Developer"
+}
+
+Test 20: Add Third Team Member
+POST https://localhost:5051/api/Projects/1/team-members
+Body:
+json{
+  "name": "Carol White",
+  "email": "carol@doetech.com",
+  "role": "UI/UX Designer"
+}
+
+Test 21: Add Module to Project
+POST https://localhost:5051/api/Projects/1/modules
+Body:
+json{
+  "moduleName": "User Authentication",
+  "description": "Login, Register, Password Reset, Email Verification",
+  "assignedToId": 1,
+  "assignedToName": "Alice Johnson"
+}
+✅ Expected Response:
+json{
+  "id": 1,
+  "projectId": 1,
+  "moduleName": "User Authentication",
+  "description": "Login, Register, Password Reset, Email Verification",
+  "assignedToId": 1,
+  "assignedToName": "Alice Johnson",
+  "status": "NotStarted",
+  "progressPercentage": 0,
+  "startDate": null,
+  "endDate": null
+}
+
+Test 22: Add More Modules
+POST https://localhost:5051/api/Projects/1/modules
+Body:
+json{
+  "moduleName": "Product Catalog",
+  "description": "Product listing, search, filters, categories",
+  "assignedToId": 1,
+  "assignedToName": "Alice Johnson"
+}
+
+POST https://localhost:5051/api/Projects/1/modules
+Body:
+json{
+  "moduleName": "Shopping Cart",
+  "description": "Add to cart, update quantity, remove items, checkout",
+  "assignedToId": 2,
+  "assignedToName": "Bob Smith"
+}
+
+POST https://localhost:5051/api/Projects/1/modules
+Body:
+json{
+  "moduleName": "Payment Gateway Integration",
+  "description": "Stripe payment integration with webhook handling",
+  "assignedToId": 2,
+  "assignedToName": "Bob Smith"
+}
+
+POST https://localhost:5051/api/Projects/1/modules
+Body:
+json{
+  "moduleName": "Admin Dashboard",
+  "description": "Admin panel for managing products, orders, users",
+  "assignedToId": 2,
+  "assignedToName": "Bob Smith"
+}
+
+Test 23: Get Complete Project Details
+GET https://localhost:5051/api/Projects/1
+✅ Expected Response: Project with all team members and modules
+
+Test 24: Update Project Progress
+PUT https://localhost:5051/api/Projects/1/progress
+Body:
+json{
+  "progressPercentage": 35
+}
+✅ Expected Response: Project with updated progress
+
+Test 25: Update Full Project
+PUT https://localhost:5051/api/Projects/1
+Body:
+json{
+  "status": "Ongoing",
+  "progressPercentage": 45,
+  "description": "A comprehensive e-commerce platform with advanced features, payment integration, and admin dashboard"
+}
+
+Test 26: Get Client with Project Counts
+GET https://localhost:5051/api/Clients/1
+✅ Expected Response:
+json{
+  "id": 1,
+  "name": "John Doe",
+  "companyName": "Doe Technologies",
+  "email": "john@doetech.com",
+  "phone": "+91-9876543210",
+  "clientType": "New",
+  "onboardedDate": "2025-11-15T10:50:00Z",
+  "isActive": true,
+  "industry": "IT",
+  "status": "Active",
+  "location": "Mumbai, Maharashtra",
+  "assignedRecruiterId": 1,
+  "assignedRecruiterName": "manager1",
+  "dateAdded": "2025-11-15T10:50:00Z",
+  "totalProjects": 2,
+  "ongoingProjects": 2,
+  "completedProjects": 0
+}

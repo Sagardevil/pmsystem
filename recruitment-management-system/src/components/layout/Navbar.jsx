@@ -1,17 +1,60 @@
 // src/components/layout/Navbar.jsx
 import React from "react";
-import { Bell, User, Search } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import {
+  Bell,
+  User,
+  Search,
+  LayoutDashboard,
+  Users,
+  Briefcase,
+  UserCheck,
+} from "lucide-react";
 
 const Navbar = () => {
+  const location = useLocation();
+
+  const menuItems = [
+    { path: "/", icon: LayoutDashboard, label: "Dashboard" },
+    { path: "/clients", icon: Users, label: "Clients" },
+    { path: "/projects", icon: Briefcase, label: "Projects" },
+    { path: "/users", icon: UserCheck, label: "Team" },
+  ];
+
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
       <div className="flex items-center justify-between px-6 py-4">
-        <div className="flex items-center space-x-4">
+        {/* Left side - App title */}
+        <div className="flex items-center space-x-8">
           <h1 className="text-2xl font-bold text-gray-800">
-            Recruitment Management
+            Project Management
           </h1>
+
+          {/* Navigation Menu */}
+          <nav className="flex items-center space-x-1">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path;
+
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+                    isActive
+                      ? "bg-blue-50 text-blue-600 border-b-2 border-blue-600"
+                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="font-medium">{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
+        {/* Right side - Search, Notifications, User */}
         <div className="flex items-center space-x-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />

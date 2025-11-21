@@ -1,10 +1,11 @@
-// Update src/App.jsx to remove Sidebar
+// src/App.jsx
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/layout/Navbar";
 import Dashboard from "./pages/Dashboard";
 import Clients from "./pages/Clients";
 import Projects from "./pages/Projects";
+import ClientProjects from "./pages/ClientProjects"; // Make sure this import exists
 import Users from "./pages/Users";
 import Notification from "./components/ui/Notification";
 import { AppProvider } from "./contexts/AppContext";
@@ -21,6 +22,11 @@ function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/clients" element={<Clients />} />
               <Route path="/projects" element={<Projects />} />
+              {/* Add this route for client-specific projects */}
+              <Route
+                path="/client/:clientId/projects"
+                element={<ClientProjects />}
+              />
               <Route path="/users" element={<Users />} />
             </Routes>
           </main>

@@ -4,7 +4,7 @@ import { useApp } from "../contexts/AppContext";
 import { clientsAPI } from "../services/api";
 import ClientForm from "../components/clients/ClientForm";
 import ClientCard from "../components/clients/ClientCard";
-import { Plus, Search, Filter } from "lucide-react";
+import { Plus, Search, Filter, Users } from "lucide-react";
 
 const Clients = () => {
   const { state, actions } = useApp();
@@ -13,6 +13,7 @@ const Clients = () => {
   const [filters, setFilters] = useState({
     industry: "",
     location: "",
+    recruiter: "", // Add recruiter filter
   });
 
   useEffect(() => {
@@ -53,24 +54,41 @@ const Clients = () => {
 
   const filteredClients = state.clients.filter((client) => {
     const matchesSearch =
-      client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.email.toLowerCase().includes(searchTerm.toLowerCase());
+      client.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.companyName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.email?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesIndustry =
       !filters.industry || client.industry === filters.industry;
     const matchesLocation =
-      !filters.location || client.location.includes(filters.location);
+      !filters.location || client.location === filters.location;
+    const matchesRecruiter =
+      !filters.recruiter || client.assignedRecruiterName === filters.recruiter; // Updated property name
 
-    return matchesSearch && matchesIndustry && matchesLocation;
+    return (
+      matchesSearch && matchesIndustry && matchesLocation && matchesRecruiter
+    );
   });
 
+  // Get unique values for dropdowns
   const industries = [
-    ...new Set(state.clients.map((client) => client.industry)),
+    ...new Set(state.clients.map((client) => client.industry).filter(Boolean)),
   ];
   const locations = [
-    ...new Set(state.clients.map((client) => client.location)),
+    ...new Set(state.clients.map((client) => client.location).filter(Boolean)),
   ];
+  const recruiters = [
+    ...new Set(
+      state.clients
+        .map((client) => client.assignedRecruiterName)
+        .filter(Boolean)
+    ), // Updated property name
+  ];
+
+  const clearAllFilters = () => {
+    setSearchTerm("");
+    setFilters({ industry: "", location: "", recruiter: "" });
+  };
 
   return (
     <div className="space-y-6">
@@ -87,7 +105,7 @@ const Clients = () => {
 
       {/* Filters and Search */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {/* Search */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -132,12 +150,25 @@ const Clients = () => {
             ))}
           </select>
 
+          {/* Recruiter Filter */}
+          <select
+            value={filters.recruiter}
+            onChange={(e) =>
+              setFilters((prev) => ({ ...prev, recruiter: e.target.value }))
+            }
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">All Recruiters</option>
+            {recruiters.map((recruiter) => (
+              <option key={recruiter} value={recruiter}>
+                {recruiter}
+              </option>
+            ))}
+          </select>
+
           {/* Clear Filters */}
           <button
-            onClick={() => {
-              setSearchTerm("");
-              setFilters({ industry: "", location: "" });
-            }}
+            onClick={clearAllFilters}
             className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2"
           >
             <Filter className="h-4 w-4" />

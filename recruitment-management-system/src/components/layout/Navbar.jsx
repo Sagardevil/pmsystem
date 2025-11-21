@@ -18,7 +18,7 @@ const Navbar = () => {
     { path: "/", icon: LayoutDashboard, label: "Dashboard" },
     { path: "/clients", icon: Users, label: "Clients" },
     { path: "/projects", icon: Briefcase, label: "Projects" },
-    { path: "/users", icon: UserCheck, label: "Team" },
+    //{ path: "/users", icon: UserCheck, label: "Team" },
   ];
 
   return (

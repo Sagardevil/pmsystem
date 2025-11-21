@@ -5,6 +5,7 @@ import { useApp } from "../contexts/AppContext";
 import { clientsAPI, projectsAPI } from "../services/api";
 import ProjectCard from "../components/projects/ProjectCard";
 import ProjectDetails from "../components/projects/ProjectDetails";
+import ProjectForm from "../components/projects/ProjectForm";
 import {
   ArrowLeft,
   Building,
@@ -16,6 +17,7 @@ import {
 } from "lucide-react";
 
 const ClientProjects = () => {
+  const [showForm, setShowForm] = useState(false);
   const { clientId } = useParams();
   const navigate = useNavigate();
   const { state, actions } = useApp();
@@ -72,6 +74,32 @@ const ClientProjects = () => {
       actions.addNotification({
         type: "error",
         message: "Failed to update progress",
+      });
+    }
+  };
+
+  const handleCreateProject = async (projectData) => {
+    try {
+      // Ensure the project is created for this specific client
+      const projectWithClient = {
+        ...projectData,
+        clientId: parseInt(clientId), // Force the current client ID
+      };
+
+      const response = await projectsAPI.create(projectWithClient);
+      await loadClientAndProjects(); // Reload the projects list
+      setShowForm(false);
+      actions.addNotification({
+        type: "success",
+        message: "Project created successfully!",
+      });
+    } catch (error) {
+      console.error("Failed to create project:", error);
+      actions.addNotification({
+        type: "error",
+        message: `Failed to create project: ${
+          error.response?.data?.message || error.message
+        }`,
       });
     }
   };
@@ -195,6 +223,13 @@ const ClientProjects = () => {
           <Briefcase className="h-5 w-5" />
           <span>Projects ({clientProjects.length})</span>
         </h2>
+        <button
+          onClick={() => setShowForm(true)}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+        >
+          <Plus className="h-4 w-4" />
+          <span>Add Project</span>
+        </button>
       </div>
 
       {/* Filters and Search */}
@@ -253,6 +288,14 @@ const ClientProjects = () => {
               ? "This client has no projects yet."
               : "No projects match your search criteria."}
           </p>
+          {clientProjects.length === 0 && (
+            <button
+              onClick={() => setShowForm(true)}
+              className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Create First Project
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -265,6 +308,17 @@ const ClientProjects = () => {
             />
           ))}
         </div>
+      )}
+
+      {/* Project Form Modal */}
+      {showForm && (
+        <ProjectForm
+          clients={[client]} // Only show the current client
+          users={state.users}
+          onSubmit={handleCreateProject}
+          onCancel={() => setShowForm(false)}
+          preselectedClientId={clientId}
+        />
       )}
 
       {/* Project Details Modal */}

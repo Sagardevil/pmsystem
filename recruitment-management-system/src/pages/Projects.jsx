@@ -5,7 +5,7 @@ import { projectsAPI, clientsAPI } from "../services/api";
 import ProjectForm from "../components/projects/ProjectForm";
 import ProjectCard from "../components/projects/ProjectCard";
 import ProjectDetails from "../components/projects/ProjectDetails";
-import { Plus, Search, Filter, Users } from "lucide-react";
+import { Plus, Search, Filter, Briefcase } from "lucide-react";
 
 const Projects = () => {
   const { state, actions } = useApp();
@@ -55,10 +55,16 @@ const Projects = () => {
         type: "success",
         message: "Project created successfully!",
       });
+
+      // Reload projects to get the updated list
+      await loadProjects();
     } catch (error) {
+      console.error("Failed to create project:", error);
       actions.addNotification({
         type: "error",
-        message: "Failed to create project",
+        message: `Failed to create project: ${
+          error.response?.data?.message || error.message
+        }`,
       });
     }
   };
@@ -192,13 +198,21 @@ const Projects = () => {
       {/* Empty State */}
       {!state.loading && filteredProjects.length === 0 && (
         <div className="text-center py-12">
-          <Users className="mx-auto h-12 w-12 text-gray-400" />
+          <Briefcase className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="mt-2 text-sm font-medium text-gray-900">
-            No projects
+            No projects found
           </h3>
           <p className="mt-1 text-sm text-gray-500">
-            Get started by creating a new project.
+            {state.projects.length === 0
+              ? "Get started by creating your first project."
+              : "No projects match your search criteria."}
           </p>
+          <button
+            onClick={() => setShowForm(true)}
+            className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Create Your First Project
+          </button>
         </div>
       )}
 
